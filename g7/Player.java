@@ -1,4 +1,4 @@
-package sqdance.g0;
+package sqdance.g7;
 
 import sqdance.sim.Point;
 
@@ -19,7 +19,7 @@ public class Player implements sqdance.sim.Player {
     private double room_side = -1;
 
     private int[] idle_turns;
-    
+    private boolean dance_turn = true;
     // init function called once with simulation parameters before anything else is called
     public void init(int d, int room_side) {
 	this.d = d;
@@ -39,14 +39,52 @@ public class Player implements sqdance.sim.Player {
     // note the dance caller does not know any player-player relationships, so order doesn't really matter in the Point[] you return. Just make sure your player is consistent with the indexing
 
     public Point[] generate_starting_locations() {
-	Point[] L  = new Point [d];
-	for (int i = 0 ; i < d ; ++i) {
-	    int b = 1000 * 1000 * 1000;
-	    double x = random.nextInt(b + 1) * room_side / b;
-	    double y = random.nextInt(b + 1) * room_side / b;
-	    L[i] = new Point(x, y);
-	}	
-	return L;
+    	double col1 = 1.0, col2 =1.501, x = 0.51;
+		Point[] L  = new Point [d];
+		boolean flip = true;
+		for (int i = 0 ; i < d ; i++) {
+		    if(x > 20){
+		    	x = 0;
+		    	col1 += 1.01;
+		    	col2 += 1.01;	
+		    }
+		    if (flip) {
+		    	L[i] = new Point(x, col1);	
+		    	flip = !flip;
+		    }else{
+		    	L[i] = new Point(x, col2);	
+		    	flip = !flip;
+		    	x += 0.51;
+		    }
+		}	
+		return L;
+    }
+
+    
+
+    public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
+    	Point[] instructions = new Point[d];
+    	double left_bound = 0, right_bound = (d-1)/2*0.51;
+		for (int i=0; i<d; i++) {
+			if(dance_turn) {
+				instructions[i] = new Point(0.0,0.0);
+				continue;
+			}
+    		Point dancer = dancers[i];
+			if(i%2 == 0){
+				if(dancer.x + 0.51/2 > right_bound)
+					instructions[i] = new Point(0.51/2,0.501);	
+				else
+					instructions[i] = new Point(0.51/2,0.0);
+			}else{
+				if(dancer.x - 0.51/2 < left_bound)
+					instructions[i] = new Point(-0.51/2,-0.501);	
+				else
+					instructions[i] = new Point(-0.51/2,0.0);
+			}
+		}
+		dance_turn = !dance_turn;
+		return instructions;
     }
 
     // play function
@@ -54,7 +92,7 @@ public class Player implements sqdance.sim.Player {
     // scores: cumulative score of the dancers
     // partner_ids: index of the current dance partner. -1 if no dance partner
     // enjoyment_gained: integer amount (-5,0,3,4, or 6) of enjoyment gained in the most recent 6-second interval
-    public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
+    public Point[] play1(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
 	Point[] instructions = new Point[d];
 	for (int i=0; i<d; i++) {
 	    int j = partner_ids[i];
