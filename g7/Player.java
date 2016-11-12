@@ -57,6 +57,7 @@ public class Player implements sqdance.sim.Player {
 		}
 		return L;
 	}
+    
 
 	// play function
 	// dancers: array of locations of the dancers
@@ -67,57 +68,6 @@ public class Player implements sqdance.sim.Player {
 		Point[] instructions = new Point[d];
 //		Point[] instructions = belt.spinBelt();
 		
-//		for (int i=0; i<d; i++) {
-//			int j = partner_ids[i];
-//			Point self = dancers[i];
-//			if (enjoyment_gained[i] > 0) { // previously had a dance partner
-//				idle_turns[i] = 0;
-//				Point dance_partner = dancers[j];
-//				// update remaining available enjoyment
-//				if (E[i][j] == -1 ) {
-//					E[i][j] = total_enjoyment(enjoyment_gained[i]) - enjoyment_gained[i];
-//				}
-//				else {
-//					E[i][j] -= enjoyment_gained[i];
-//				}
-//				// stay put and continue dancing if there is more to enjoy
-//				if (E[i][j] > 0) {
-//					instructions[i] = new Point(0.0, 0.0);
-//					continue;
-//				}
-//			}
-//			Point m = null;	    
-//			if (++idle_turns[i] > 21) { // if stuck at current position without enjoying anything
-//				idle_turns[i] = 0;
-//			} else { // stay put if there's another potential dance partner in range
-//				double closest_dist = Double.MAX_VALUE;
-//				int closest_index = -1;
-//				for (int t=0; t<d; t++) {
-//					// skip if no more to enjoy
-//					if (E[i][t] == 0) continue;
-//					// compute squared distance
-//					Point p = dancers[t];		
-//					double dx = self.x - p.x;
-//					double dy = self.y - p.y;
-//					double dd = dx * dx + dy * dy;
-//					// stay put and try to dance if new person around or more enjoyment remaining.		
-//					if (dd >= 0.25 && dd < 4.0) {
-//						m = new Point(0.0, 0.0);
-//						break;
-//					}
-//				}
-//			}
-//			// move randomly if no move yet
-//			if (m == null) {
-//				double dir = random.nextDouble() * 2 * Math.PI;
-//				double dx = 1.9 * Math.cos(dir);
-//				double dy = 1.9 * Math.sin(dir);
-//				m = new Point(dx, dy);
-//				if (!self.valid_movement(m, room_side))
-//					m = new Point(0,0);
-//			}
-//			instructions[i] = m;
-//		}
 		return instructions;
 	}
 
