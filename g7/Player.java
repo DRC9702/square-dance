@@ -64,9 +64,15 @@ public class Player implements sqdance.sim.Player {
 	// scores: cumulative score of the dancers
 	// partner_ids: index of the current dance partner. -1 if no dance partner
 	// enjoyment_gained: integer amount (-5,0,3,4, or 6) of enjoyment gained in the most recent 6-second interval
+	boolean stopTurn;
 	public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
 		Point[] instructions = new Point[d];
-//		Point[] instructions = belt.spinBelt();
+		for(int i=0; i<d; i++)
+			instructions[i] = new Point(0,0);
+		if(stopTurn){
+			instructions = belt.spinBelt();
+		}
+		stopTurn = !stopTurn;
 		
 		return instructions;
 	}
