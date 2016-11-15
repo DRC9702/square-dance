@@ -95,11 +95,10 @@ public class Belt {
 
 	public void initializeTablePositions(int numDancers){
 		tablePositions = new Point[38][39];
-		
 		for(int row=0; row<38; row++){
 			for(int column=0; column<39; column++){
-				double offSet = (0.001) * row/2;
-				tablePositions[row][column] = new Point(column*0.51,row*0.5 + offSet);
+				double offSet = (0.01) * (row/2);
+				tablePositions[row][column] = new Point(column*0.51,row*0.5001 + offSet);
 			}
 		}
 	}
