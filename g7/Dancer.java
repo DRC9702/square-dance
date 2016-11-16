@@ -49,10 +49,11 @@ public class Dancer {
 			dancerStatus=WILL_DANCE;
 		else if(dancerStatus==WILL_DANCE){
 			if(friendToTime.containsKey(partnerDanceId)){ //Partner is a friend
-				if(friendToTime.get(partnerDanceId) < 200) //You're not bored of this friend
+				if(friendToTime.get(partnerDanceId) < 92) {//You're not bored of this friend
 					dancerStatus=WILL_DANCE; //Keep dancing
-				else
+				} else {
 					dancerStatus=WILL_MOVE;	//Move
+				}
 			} else {
 				dancerStatus=WILL_MOVE;
 			}
