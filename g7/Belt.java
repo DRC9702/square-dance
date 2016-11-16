@@ -23,6 +23,7 @@ public class Belt {
 	private static int MaxNumRows = 19;
 	private static int MaxNumCols = 39;
 	private static int MaxPairNum = 2;
+	private static int MaxContinuousDancers = 2;
 	
 	public Belt(int numDancers){
 		if(numDancers%2!=0)
@@ -213,50 +214,56 @@ public class Belt {
 		}
 		
 		int[][] dancerMatrix = new int[MaxNumRows*2][MaxNumCols];
+		Map<String, Integer> posToDancerID = new HashMap<>();
 
 		for (Dancer d : curDancers) {
 
 			int[] pos = CoordinatePosition(d.beltIndex);
 			int row_index = pos[0];
 			int col_index = pos[1];
-			//System.out.println("---" + row_index + ":" + col_index);
-			
-			int left = (col_index - 1 + MaxNumCols) % MaxNumCols;
-			int ll = (col_index - 2 + MaxNumCols) % MaxNumCols;
 
-			int right = (col_index + 1 + MaxNumCols) % MaxNumCols;
-			int rr = (col_index + 2 + MaxNumCols) % MaxNumCols;
-
-			if (dancerMatrix[row_index][left] == 1 && dancerMatrix[row_index][ll] == 1) {
-				continue;
-			} else if (dancerMatrix[row_index][right] == 1 && dancerMatrix[row_index][rr] == 1) {
-				continue;
-			} else if (dancerMatrix[row_index][left] == 1 && dancerMatrix[row_index][right] == 1) {
-				continue;
-			}
-
-			validDancers.add(d.dancerId);
 			dancerMatrix[row_index][col_index] = 1;
-			/*int leftBeltIndex = (d.beltIndex - 1 + numDancers)%numDancers;
-			int rightBeltIndex = (d.beltIndex + 1)%numDancers;
+			String key = row_index + "#" + col_index;
+			posToDancerID.put(key, d.dancerId);
+			validDancers.add(d.dancerId);
 
-			int llBeltIndex = (d.beltIndex - 2 + numDancers)%numDancers;
-			int rrBeltIndex = (d.beltIndex + 2)%numDancers;
+		}
 
-			if (curDancers.contains(beltIndexToDancer(leftBeltIndex)) && curDancers.contains(beltIndexToDancer(rightBeltIndex)) ) {
-				continue;
-			} else if (curDancers.contains(beltIndexToDancer(leftBeltIndex)) && curDancers.contains(beltIndexToDancer(llBeltIndex)) ) {
-				continue;
-			} else if (curDancers.contains(beltIndexToDancer(rightBeltIndex)) && curDancers.contains(beltIndexToDancer(rrBeltIndex)) )  {
-				continue;
+		for (int i=0 ; i<dancerMatrix.length ; ++i) {
+			int continuousDancers = 0;
+			for (int j=0 ; j<dancerMatrix[0].length ; ++j) {
+				if (dancerMatrix[i][j] == 1) {
+					++continuousDancers;
+				} else {
+					continuousDancers = 0;
+				}
+
+				if (continuousDancers > MaxContinuousDancers) {
+					String key = i + "#" + j;
+					int dancerId = posToDancerID.get(i + "#" + j);
+					validDancers.remove(dancerId);
+
+					dancerMatrix[i][j] = 0;
+					continuousDancers = 0;
+				}
+
 			}
-
-			validDancers.add(d.dancerId);*/
-
+				
 		}
 
 		return validDancers;
 
+	}
+
+	private void printMatrix(int[][] dancerMatrix) {
+		for (int i=0 ; i<dancerMatrix.length ; ++i) {
+			for (int j=0 ; j<dancerMatrix[0].length ; ++j)
+				System.out.print(dancerMatrix[i][j]);
+			System.out.println();
+		}
+
+		System.out.println();
+		System.out.println();
 	}
 	
 }
