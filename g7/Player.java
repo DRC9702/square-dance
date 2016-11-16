@@ -18,7 +18,7 @@ public class Player implements sqdance.sim.Player {
 
 	// simulation parameters
 	private int d = -1;
-	private double room_side = -1;
+	private double room_side = -1; 
 
 	private int[] idle_turns;
 
@@ -83,9 +83,10 @@ public class Player implements sqdance.sim.Player {
 
 
 	private Set<Integer> getCurDancers(int[] enjoyment_gained) {
-		Set<Integer> res = new HashSet<>();
+		Set<Dancer> res_dancers = new HashSet<>();
 		for (Dancer d : belt.dancerList) {
 			int partnerId = belt.getPartnerDancerID(d.dancerId);
+			
 			if (d.dancerStatus == Dancer.WILL_DANCE) {
 				d.classifyDancer(partnerId, enjoyment_gained[d.dancerId]);
 			} 
@@ -93,9 +94,15 @@ public class Player implements sqdance.sim.Player {
 			d.determineStatus(partnerId);
 
 			if (d.dancerStatus == Dancer.WILL_DANCE) {
-				res.add(d.dancerId);
+				res_dancers.add(d);
 			}
 		}
+
+		Set<Integer> res = belt.verifyDancer(res_dancers);
+
+		//System.out.println();
+		//System.out.println();
+		//System.out.println();
 		return res;
 	}
 

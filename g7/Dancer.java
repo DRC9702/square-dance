@@ -2,7 +2,7 @@ package sqdance.g7;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import java.io.*;
 import sqdance.sim.Point;
 
 public class Dancer {
@@ -24,7 +24,7 @@ public class Dancer {
 	
 	public Dancer(int dancerId, int beltIndex){
 		friendToTime = new HashMap<Integer,Integer>();
-		strangerToTime = new HashMap<Integer,Integer>();
+		strangerToTime = new HashMap<Integer,Integer>(); 
 		
 		this.dancerId = dancerId;
 		this.beltIndex = beltIndex;
@@ -34,6 +34,7 @@ public class Dancer {
 	public void classifyDancer(int partnerID, int enjoymentGained){
 		//if(friendToTime.containsKey(dancerID))
 		//	friendToTime.replace(dancerID, friendToTime)
+		//System.out.print(enjoymentGained + ",");
 		switch(enjoymentGained){
 			case 4: friendToTime.put(partnerID, friendToTime.getOrDefault(partnerID, 0) + 4); break;
 			case 3: strangerToTime.put(partnerID, strangerToTime.getOrDefault(partnerID, 0) + 3); break;
@@ -48,7 +49,7 @@ public class Dancer {
 			dancerStatus=WILL_DANCE;
 		else if(dancerStatus==WILL_DANCE){
 			if(friendToTime.containsKey(partnerDanceId)){ //Partner is a friend
-				if(friendToTime.get(partnerDanceId) < 300) //You're not bored of this friend
+				if(friendToTime.get(partnerDanceId) < 200) //You're not bored of this friend
 					dancerStatus=WILL_DANCE; //Keep dancing
 				else
 					dancerStatus=WILL_MOVE;	//Move

@@ -123,7 +123,7 @@ public class Belt {
 		}
 		
 
-		for (Integer x : curDancers) {
+		/*for (Integer x : curDancers) {
 			System.out.print("," + x);
 		}
 
@@ -131,10 +131,13 @@ public class Belt {
 		System.out.println();
 		System.out.println();
 		System.out.println();
-		System.out.println();
+		System.out.println();*/
 		
-		for(int i=0; i<numDancers && !curDancers.contains(i) ; i++){
+		for(int i=0; i<numDancers; i++){
 			Dancer oldDancer = dancerList.get(i);
+			if (curDancers.contains(oldDancer.dancerId)){
+				continue;
+			} 
 //			Dancer newDancer = dancerList.get((i+1)%numDancers);
 			int oldBeltIndex = oldDancer.beltIndex; 
 			int newBeltIndex = (oldBeltIndex + 1)%numDancers;
@@ -150,9 +153,13 @@ public class Belt {
 			Point instruct = new Point(newPos.x-oldPos.x, newPos.y-oldPos.y); 
 			instructions[i] = instruct;
 		}
-		for(int i=0; i<numDancers && !curDancers.contains(i) ;i++){
+
+		for(int i=0; i<numDancers ;i++){
 			Dancer oldDancer = dancerList.get(i);
 //			Dancer newDancer = dancerList.get((i+1)%numDancers);
+			if (curDancers.contains(oldDancer.dancerId)) {
+				continue;
+			} 
 			int oldBeltIndex = oldDancer.beltIndex; 
 //			int newBeltIndex = newDancer.beltIndex;
 			int newBeltIndex = (oldBeltIndex + 1)%numDancers;
@@ -162,7 +169,7 @@ public class Belt {
 			
 //			newBeltIndex -= (i==numDancers-1) ? 1 : 0;
 			
-			oldDancer.beltIndex = newBeltIndex;
+			oldDancer.beltIndex = newBeltIndex; 
 		}
 
 		//System.out.println(instructions[0])
@@ -190,6 +197,66 @@ public class Belt {
 		int beltIndex = dancerList.get(dancerId).beltIndex;
 		int partnerBeltIndex = getPartnerBeltIndex(beltIndex);
 		return beltIndexToDancer(partnerBeltIndex);
+	}
+
+
+	
+	// UGLY !!!!! But I am soooooooooo  sleepy
+	public Set<Integer> verifyDancer(Set<Dancer> curDancers) {
+		//System.out.println(curDancers.size());
+		Set<Integer> validDancers = new HashSet<>();
+		if (curDancers.size() == numDancers) { 
+			for (Dancer d : curDancers) {
+				validDancers.add(d.dancerId);
+			}
+			return validDancers;
+		}
+		
+		int[][] dancerMatrix = new int[MaxNumRows*2][MaxNumCols];
+
+		for (Dancer d : curDancers) {
+
+			int[] pos = CoordinatePosition(d.beltIndex);
+			int row_index = pos[0];
+			int col_index = pos[1];
+			//System.out.println("---" + row_index + ":" + col_index);
+			
+			int left = (col_index - 1 + MaxNumCols) % MaxNumCols;
+			int ll = (col_index - 2 + MaxNumCols) % MaxNumCols;
+
+			int right = (col_index + 1 + MaxNumCols) % MaxNumCols;
+			int rr = (col_index + 2 + MaxNumCols) % MaxNumCols;
+
+			if (dancerMatrix[row_index][left] == 1 && dancerMatrix[row_index][ll] == 1) {
+				continue;
+			} else if (dancerMatrix[row_index][right] == 1 && dancerMatrix[row_index][rr] == 1) {
+				continue;
+			} else if (dancerMatrix[row_index][left] == 1 && dancerMatrix[row_index][right] == 1) {
+				continue;
+			}
+
+			validDancers.add(d.dancerId);
+			dancerMatrix[row_index][col_index] = 1;
+			/*int leftBeltIndex = (d.beltIndex - 1 + numDancers)%numDancers;
+			int rightBeltIndex = (d.beltIndex + 1)%numDancers;
+
+			int llBeltIndex = (d.beltIndex - 2 + numDancers)%numDancers;
+			int rrBeltIndex = (d.beltIndex + 2)%numDancers;
+
+			if (curDancers.contains(beltIndexToDancer(leftBeltIndex)) && curDancers.contains(beltIndexToDancer(rightBeltIndex)) ) {
+				continue;
+			} else if (curDancers.contains(beltIndexToDancer(leftBeltIndex)) && curDancers.contains(beltIndexToDancer(llBeltIndex)) ) {
+				continue;
+			} else if (curDancers.contains(beltIndexToDancer(rightBeltIndex)) && curDancers.contains(beltIndexToDancer(rrBeltIndex)) )  {
+				continue;
+			}
+
+			validDancers.add(d.dancerId);*/
+
+		}
+
+		return validDancers;
+
 	}
 	
 }
