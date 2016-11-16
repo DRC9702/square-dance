@@ -4,6 +4,8 @@ import sqdance.sim.Point;
 
 import java.io.*;
 import java.util.Random;
+import java.util.Set;
+import java.util.HashSet;
 
 public class Player implements sqdance.sim.Player {
 
@@ -67,14 +69,34 @@ public class Player implements sqdance.sim.Player {
 	boolean stopTurn;
 	public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
 		Point[] instructions = new Point[d];
+		Set<Integer> curDancers = getCurDancers(enjoyment_gained);
 //		for(int i=0; i<d; i++)
 //			instructions[i] = new Point(0,0);
 //		if(stopTurn){
 //			instructions = belt.spinBelt();
 //		}
 //		stopTurn = !stopTurn;
+		instructions = belt.spinBelt(curDancers);
 		
 		return instructions;
+	}
+
+
+	private Set<Integer> getCurDancers(int[] enjoyment_gained) {
+		Set<Integer> res = new HashSet<>();
+		for (Dancer d : belt.dancerList) {
+			int partnerId = belt.getPartnerDancerID(d.dancerId);
+			if (d.dancerStatus == Dancer.WILL_DANCE) {
+				d.classifyDancer(partnerId, enjoyment_gained[d.dancerId]);
+			} 
+
+			d.determineStatus(partnerId);
+
+			if (d.dancerStatus == Dancer.WILL_DANCE) {
+				res.add(d.dancerId);
+			}
+		}
+		return res;
 	}
 
 	private int total_enjoyment(int enjoyment_gained) {

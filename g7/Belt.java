@@ -3,6 +3,8 @@ package sqdance.g7;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import sqdance.sim.Point;
 
@@ -114,31 +116,56 @@ public class Belt {
 		return indexToPositionSide.get(i);
 	}
 	
-	public Point[] spinBelt(){
+	public Point[] spinBelt(Set<Integer> curDancers){
 		Point[] instructions = new Point[numDancers];
+		for (int i=0 ; i<numDancers ; ++i) {
+			instructions[i] = new Point(0, 0);
+		}
 		
-		for(int i=0; i<numDancers;i++){
+
+		for (Integer x : curDancers) {
+			System.out.print("," + x);
+		}
+
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
+		for(int i=0; i<numDancers && !curDancers.contains(i) ; i++){
 			Dancer oldDancer = dancerList.get(i);
 //			Dancer newDancer = dancerList.get((i+1)%numDancers);
 			int oldBeltIndex = oldDancer.beltIndex; 
 			int newBeltIndex = (oldBeltIndex + 1)%numDancers;
+
+			while(curDancers.contains(beltIndexToDancer(newBeltIndex))){
+				newBeltIndex = (newBeltIndex+1)%numDancers;
+			}
+
 			Point oldPos = getPosition(oldBeltIndex);
 			Point newPos = getPosition(newBeltIndex);
 			//oldDancer.beltIndex = newBeltIndex;
+			//System.out.println("HHHHH");
 			Point instruct = new Point(newPos.x-oldPos.x, newPos.y-oldPos.y); 
 			instructions[i] = instruct;
 		}
-		for(int i=0; i<numDancers;i++){
+		for(int i=0; i<numDancers && !curDancers.contains(i) ;i++){
 			Dancer oldDancer = dancerList.get(i);
 //			Dancer newDancer = dancerList.get((i+1)%numDancers);
 			int oldBeltIndex = oldDancer.beltIndex; 
 //			int newBeltIndex = newDancer.beltIndex;
 			int newBeltIndex = (oldBeltIndex + 1)%numDancers;
+			while(curDancers.contains(beltIndexToDancer(newBeltIndex))){
+				newBeltIndex = (newBeltIndex+1)%numDancers;
+			}
 			
 //			newBeltIndex -= (i==numDancers-1) ? 1 : 0;
 			
 			oldDancer.beltIndex = newBeltIndex;
 		}
+
+		//System.out.println(instructions[0])
 		return instructions;
 	}
 	
@@ -157,6 +184,12 @@ public class Belt {
 				return d.dancerId;
 		}
 		return -1;
+	}
+
+	public int getPartnerDancerID(int dancerId) {
+		int beltIndex = dancerList.get(dancerId).beltIndex;
+		int partnerBeltIndex = getPartnerBeltIndex(beltIndex);
+		return beltIndexToDancer(partnerBeltIndex);
 	}
 	
 }

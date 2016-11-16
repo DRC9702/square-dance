@@ -28,23 +28,23 @@ public class Dancer {
 		
 		this.dancerId = dancerId;
 		this.beltIndex = beltIndex;
-		dancerStatus = 1; // Will always dance on first turn when you initialize
+		//dancerStatus = 0; // Will always dance on first turn when you initialize
 	}
 	
-	public void classifyDancer(int dancerID, int enjoymentGained){
+	public void classifyDancer(int partnerID, int enjoymentGained){
 		//if(friendToTime.containsKey(dancerID))
 		//	friendToTime.replace(dancerID, friendToTime)
 		switch(enjoymentGained){
-			case 4: friendToTime.put(dancerID, friendToTime.getOrDefault(dancerID, 0) + 4); break;
-			case 3: strangerToTime.put(dancerID, strangerToTime.getOrDefault(dancerID, 0) + 3); break;
-			case 6: soulMate = dancerID; break;
+			case 4: friendToTime.put(partnerID, friendToTime.getOrDefault(partnerID, 0) + 4); break;
+			case 3: strangerToTime.put(partnerID, strangerToTime.getOrDefault(partnerID, 0) + 3); break;
+			case 6: soulMate = partnerID; break;
 			default: break;//nothing.
 		}		
 		//TODO: Do this. This is hard because you also need to adjust the values in the map
 	}
 	
 	public void determineStatus(int partnerDanceId){
-		if(dancerStatus==WILL_MOVE)//Was moving
+		if(dancerStatus==WILL_MOVE || dancerStatus==UNDETERMINED)//Was moving
 			dancerStatus=WILL_DANCE;
 		else if(dancerStatus==WILL_DANCE){
 			if(friendToTime.containsKey(partnerDanceId)){ //Partner is a friend
@@ -52,6 +52,8 @@ public class Dancer {
 					dancerStatus=WILL_DANCE; //Keep dancing
 				else
 					dancerStatus=WILL_MOVE;	//Move
+			} else {
+				dancerStatus=WILL_MOVE;
 			}
 		}
 		//ToDo: Figure out what to do when you've already danced with all your friends for max time
