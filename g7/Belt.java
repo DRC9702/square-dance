@@ -11,6 +11,9 @@ public class Belt {
 	Map<Integer,Point> indexToPositionSide;
 	ArrayList<Dancer> dancerList;
 	
+	private Map<Integer,Integer> beltIndexToRowIndex;
+	private Map<Integer,Integer> beltIndexToColumnIndex;
+	
 	Point[][] tablePositions;
 	
 	boolean beltParity = false;
@@ -28,6 +31,8 @@ public class Belt {
 		initializeTablePositions(numDancers+1);
 		
 		indexToPositionSide = new HashMap<Integer,Point>();
+		beltIndexToRowIndex = new HashMap<Integer,Integer>();
+		beltIndexToColumnIndex = new HashMap<Integer,Integer>();
 		dancerList = new ArrayList<Dancer>();
 		
 		int numCols = MaxNumCols;
@@ -64,6 +69,8 @@ public class Belt {
 			col_index += goingRight ? 1 : -1;
 			//System.out.println(i + "---" + row_index + ":" + col_index);
 			indexToPositionSide.put(i, tablePositions[row_index][col_index]);
+			beltIndexToRowIndex.put(i, row_index);
+			beltIndexToColumnIndex.put(i, col_index);
 			 
 
 		}
@@ -112,9 +119,9 @@ public class Belt {
 		
 		for(int i=0; i<numDancers;i++){
 			Dancer oldDancer = dancerList.get(i);
-			Dancer newDancer = dancerList.get((i+1)%numDancers);
+//			Dancer newDancer = dancerList.get((i+1)%numDancers);
 			int oldBeltIndex = oldDancer.beltIndex; 
-			int newBeltIndex = newDancer.beltIndex;
+			int newBeltIndex = (oldBeltIndex + 1)%numDancers;
 			Point oldPos = getPosition(oldBeltIndex);
 			Point newPos = getPosition(newBeltIndex);
 			//oldDancer.beltIndex = newBeltIndex;
@@ -123,15 +130,33 @@ public class Belt {
 		}
 		for(int i=0; i<numDancers;i++){
 			Dancer oldDancer = dancerList.get(i);
-			Dancer newDancer = dancerList.get((i+1)%numDancers);
+//			Dancer newDancer = dancerList.get((i+1)%numDancers);
 			int oldBeltIndex = oldDancer.beltIndex; 
-			int newBeltIndex = newDancer.beltIndex;
+//			int newBeltIndex = newDancer.beltIndex;
+			int newBeltIndex = (oldBeltIndex + 1)%numDancers;
 			
-			newBeltIndex -= (i==numDancers-1) ? 1 : 0;
+//			newBeltIndex -= (i==numDancers-1) ? 1 : 0;
 			
 			oldDancer.beltIndex = newBeltIndex;
 		}
 		return instructions;
+	}
+	
+	public int[] CoordinatePosition(int beltIndex){
+		return new int[]{beltIndexToRowIndex.get(beltIndex),beltIndexToColumnIndex.get(beltIndex)};
+	}
+	
+	public int getPartnerBeltIndex(int beltIndex){
+		return numDancers-1-beltIndex;
+	}
+	
+	//ToDo: Easy to improve performance here but we're lazy and this is good enough.
+	public int beltIndexToDancer(int beltIndex){
+		for(Dancer d : dancerList){
+			if(d.beltIndex==beltIndex)
+				return d.dancerId;
+		}
+		return -1;
 	}
 	
 }

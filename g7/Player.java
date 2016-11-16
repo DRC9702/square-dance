@@ -67,12 +67,12 @@ public class Player implements sqdance.sim.Player {
 	boolean stopTurn;
 	public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
 		Point[] instructions = new Point[d];
-		for(int i=0; i<d; i++)
-			instructions[i] = new Point(0,0);
-		if(stopTurn){
-			instructions = belt.spinBelt();
-		}
-		stopTurn = !stopTurn;
+//		for(int i=0; i<d; i++)
+//			instructions[i] = new Point(0,0);
+//		if(stopTurn){
+//			instructions = belt.spinBelt();
+//		}
+//		stopTurn = !stopTurn;
 		
 		return instructions;
 	}
