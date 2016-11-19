@@ -201,10 +201,8 @@ public class Belt {
 	}
 
 
-	
-	// UGLY !!!!! But I am soooooooooo  sleepy
+
 	public Set<Integer> verifyDancer(Set<Dancer> curDancers) {
-		//System.out.println(curDancers.size());
 		Set<Integer> validDancers = new HashSet<>();
 		if (curDancers.size() == numDancers) { 
 			for (Dancer d : curDancers) {
@@ -228,7 +226,7 @@ public class Belt {
 			validDancers.add(d.dancerId);
 
 		}
-
+		
 		for (int i=0 ; i<dancerMatrix.length ; ++i) {
 			int continuousDancers = 0;
 			for (int j=0 ; j<dancerMatrix[0].length ; ++j) {
@@ -242,6 +240,7 @@ public class Belt {
 					String key = i + "#" + j;
 					int dancerId = posToDancerID.get(i + "#" + j);
 					validDancers.remove(dancerId);
+					changeDancerStatus(dancerId, Dancer.WILL_MOVE);
 
 					dancerMatrix[i][j] = 0;
 					continuousDancers = 0;
@@ -250,7 +249,7 @@ public class Belt {
 			}
 				
 		}
-
+		
 		return validDancers;
 
 	}
@@ -264,6 +263,10 @@ public class Belt {
 
 		System.out.println();
 		System.out.println();
+	}
+	
+	public void changeDancerStatus(int dancerId, int status) {
+		this.dancerList.get(dancerId).dancerStatus = status;
 	}
 	
 }

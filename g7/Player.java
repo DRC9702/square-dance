@@ -23,6 +23,8 @@ public class Player implements sqdance.sim.Player {
 	private int[] idle_turns;
 
 	private Belt belt;
+	
+	private static final int NUM_DANCE_TURNS = 9; // Only use (1,2,5,10)-1
 
 	// init function called once with simulation parameters before anything else is called
 	public void init(int d, int room_side) {
@@ -66,21 +68,41 @@ public class Player implements sqdance.sim.Player {
 	// scores: cumulative score of the dancers
 	// partner_ids: index of the current dance partner. -1 if no dance partner
 	// enjoyment_gained: integer amount (-5,0,3,4, or 6) of enjoyment gained in the most recent 6-second interval
-	boolean danceTurn = true;
+	int danceTurn = NUM_DANCE_TURNS;
 	public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
 		Point[] instructions = new Point[d];	
 		for(int i=0; i<d; i++)
 			instructions[i] = new Point(0,0);
 
-		if(!danceTurn){
+		if(danceTurn == 0){
+			//System.out.println("MOVE");
+			setEveryoneToDance();	// Set everyone's status to be "WILL_Dance" (was dancing)
 			Set<Integer> curDancers = getCurDancers(enjoyment_gained);
 			instructions = belt.spinBelt(curDancers);
+			danceTurn = NUM_DANCE_TURNS + 1;
+		} else {
+			//System.out.println("Dance");
+			addDanceTimeToEveryone(enjoyment_gained);
+			
 		}
-		danceTurn = !danceTurn;
+		
+		danceTurn--;
 		return instructions;
 	}
 
-
+	private void addDanceTimeToEveryone(int[] enjoyment_gained) {
+		for (Dancer d : belt.dancerList) {
+			int partnerId = belt.getPartnerDancerID(d.dancerId);
+			d.classifyDancer(partnerId,enjoyment_gained[d.dancerId]);
+		}
+	}
+	
+	private void setEveryoneToDance() {
+		for (Dancer d : belt.dancerList) {
+			belt.changeDancerStatus(d.dancerId, Dancer.WILL_DANCE);
+		}
+	}
+	
 	private Set<Integer> getCurDancers(int[] enjoyment_gained) {
 		Set<Dancer> res_dancers = new HashSet<>();
 		for (Dancer d : belt.dancerList) {

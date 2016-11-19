@@ -32,9 +32,6 @@ public class Dancer {
 	}
 	
 	public void classifyDancer(int partnerID, int enjoymentGained){
-		//if(friendToTime.containsKey(dancerID))
-		//	friendToTime.replace(dancerID, friendToTime)
-		//System.out.print(enjoymentGained + ",");
 		switch(enjoymentGained){
 			case 4: friendToTime.put(partnerID, friendToTime.getOrDefault(partnerID, 0) + 4); break;
 			case 3: strangerToTime.put(partnerID, strangerToTime.getOrDefault(partnerID, 0) + 3); break;
@@ -45,11 +42,12 @@ public class Dancer {
 	}
 	
 	public void determineStatus(int partnerDanceId){
-		if(dancerStatus==WILL_MOVE || dancerStatus==UNDETERMINED)//Was moving
+		if(dancerStatus==WILL_MOVE || dancerStatus == UNDETERMINED)//Was moving
 			dancerStatus=WILL_DANCE;
 		else if(dancerStatus==WILL_DANCE){
 			if(friendToTime.containsKey(partnerDanceId)){ //Partner is a friend
-				if(friendToTime.get(partnerDanceId) < 92) {//You're not bored of this friend
+				//System.out.println(friendToTime.get(partnerDanceId));
+				if(friendToTime.get(partnerDanceId) < 196) {//You're not bored of this friend
 					dancerStatus=WILL_DANCE; //Keep dancing
 				} else {
 					dancerStatus=WILL_MOVE;	//Move
@@ -62,5 +60,8 @@ public class Dancer {
 		//Just repeat friend code above but for strangers
 		//Actually this is a complicated scenario. WIll think about later.
 	}
+	
+	
+
 	
 }
