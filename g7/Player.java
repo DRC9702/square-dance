@@ -24,7 +24,7 @@ public class Player implements sqdance.sim.Player {
 
 	private Belt belt;
 	
-	private static final int NUM_DANCE_TURNS = 9; // Only use (1,2,5,10)-1
+	private static final int NUM_DANCE_TURNS = 1; // Only use (1,2,5,10)-1
 
 	// init function called once with simulation parameters before anything else is called
 	public void init(int d, int room_side) {
