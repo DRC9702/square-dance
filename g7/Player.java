@@ -20,11 +20,15 @@ public class Player implements sqdance.sim.Player {
 	private int d = -1;
 	private double room_side = -1; 
 
+
 	private int[] idle_turns;
 
 	private Belt belt;
+
 	
-	private static final int NUM_DANCE_TURNS = 1; // Only use (1,2,5,10)-1
+	private static  int NUM_DANCE_TURNS = 1; // Only use (1,2,5,10)-1
+	
+	private int danceTurn;
 
 	// init function called once with simulation parameters before anything else is called
 	public void init(int d, int room_side) {
@@ -39,6 +43,9 @@ public class Player implements sqdance.sim.Player {
 				E[i][j] = i == j ? 0 : -1;
 			}
 		}
+
+		NUM_DANCE_TURNS = d <= 1482 ? 9 : 1;
+		danceTurn = NUM_DANCE_TURNS;
 	}
 
 	// setup function called once to generate initial player locations
@@ -46,15 +53,6 @@ public class Player implements sqdance.sim.Player {
 
 	public Point[] generate_starting_locations() {
 		belt = new Belt(d);	
-
-		//	Point[] L  = new Point [d];
-		//	for (int i = 0 ; i < d ; ++i) {
-		//	    int b = 1000 * 1000 * 1000;
-		//	    double x = random.nextInt(b + 1) * room_side / b;
-		//	    double y = random.nextInt(b + 1) * room_side / b;
-		//	    L[i] = new Point(x, y);
-		//	}	
-
 		Point[] L = new Point[d];
 		for(int i=0; i<d; i++){
 			L[i] = belt.getPosition(belt.dancerList.get(i).beltIndex);
@@ -68,7 +66,7 @@ public class Player implements sqdance.sim.Player {
 	// scores: cumulative score of the dancers
 	// partner_ids: index of the current dance partner. -1 if no dance partner
 	// enjoyment_gained: integer amount (-5,0,3,4, or 6) of enjoyment gained in the most recent 6-second interval
-	int danceTurn = NUM_DANCE_TURNS;
+	
 	public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
 		Point[] instructions = new Point[d];	
 		for(int i=0; i<d; i++)
