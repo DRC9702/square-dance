@@ -227,6 +227,9 @@ public class Belt {
 
 		}
 		
+		//System.out.println("before");
+		//printMatrix(dancerMatrix);
+
 		for (int i=0 ; i<dancerMatrix.length ; ++i) {
 			int continuousDancers = 0;
 			for (int j=0 ; j<dancerMatrix[0].length ; ++j) {
@@ -250,6 +253,14 @@ public class Belt {
 				
 		}
 		
+		/*System.out.println("after");
+		printMatrix(dancerMatrix);
+
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();*/
+
 		return validDancers;
 
 	}
