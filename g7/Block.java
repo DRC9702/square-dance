@@ -18,7 +18,7 @@ public class Block {
 	//Not just 2
 	public void initializePositions(Point startPoint, int dancersInBlock, boolean isTop){
 		positions = new ArrayList<Point>();
-		if(dancersInBlock < 1 || dancersInBlock > 15) //Later will be 25
+		if(dancersInBlock < 1 || dancersInBlock > 25) //Later will be 25
 			throw new RuntimeException("Invalid Number of dancersInBlock: " + dancersInBlock);
 		//else{
 		//	System.out.println("Dancers in block: " + dancersInBlock);
@@ -32,7 +32,7 @@ public class Block {
 			if(i==2)
 				continue;
 			else
-				positions.add(startPoint.add(new Point((i/3)*0.10001,multiplier*(-2+(i%3))*0.10001))); //Change that 3 to a 5 later
+				positions.add(startPoint.add(new Point((i/5)*0.10001,multiplier*(-2+(i%5))*0.10001))); //Change that 3 to a 5 later
 			count++;
 		}
 		//System.out.println("Positions size: " + positions.size());
