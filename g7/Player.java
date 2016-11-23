@@ -5,7 +5,14 @@ import sqdance.sim.Point;
 import java.io.*;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+
+import static java.util.Comparator.comparing;
 
 public class Player implements sqdance.sim.Player {
 
@@ -67,7 +74,24 @@ public class Player implements sqdance.sim.Player {
 	// partner_ids: index of the current dance partner. -1 if no dance partner
 	// enjoyment_gained: integer amount (-5,0,3,4, or 6) of enjoyment gained in the most recent 6-second interval
 	
+	public static int[] bottomIndices(final int[] input, final int n){
+		return IntStream.range(0,input.length).boxed()
+				.sorted(comparing(i->input[i])).mapToInt(i -> i)
+				.limit(n).toArray();			
+	}
+	
 	public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
+		
+		//System.out.println(Arrays.toString(bottomIndices(scores,scores.length/10)));
+		int[] lowestScorers = bottomIndices(scores,scores.length/10);
+		List<Integer> lowScorerList = IntStream.of(lowestScorers).boxed().collect(Collectors.toList());
+		for(Dancer d : belt.dancerList){
+			if(lowScorerList.contains(d.dancerId))
+				d.isLowerScorer=true;
+			else
+				d.isLowerScorer=false;
+		}
+		
 		Point[] instructions = new Point[d];	
 		for(int i=0; i<d; i++)
 			instructions[i] = new Point(0,0);
