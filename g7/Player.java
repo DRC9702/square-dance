@@ -82,21 +82,24 @@ public class Player implements sqdance.sim.Player {
 	
 	public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
 		
-		//System.out.println(Arrays.toString(bottomIndices(scores,scores.length/10)));
-		int[] lowestScorers = bottomIndices(scores,scores.length/10);
-		List<Integer> lowScorerList = IntStream.of(lowestScorers).boxed().collect(Collectors.toList());
-		for(Dancer d : belt.dancerList){
-			if(lowScorerList.contains(d.dancerId))
-				d.isLowerScorer=true;
-			else
-				d.isLowerScorer=false;
-		}
+		System.out.println(Arrays.toString(bottomIndices(scores,scores.length/10)));
+		
 		
 		Point[] instructions = new Point[d];	
 		for(int i=0; i<d; i++)
 			instructions[i] = new Point(0,0);
 
 		if(danceTurn == 0){
+			int[] lowestScorers = bottomIndices(scores,scores.length/10);
+			List<Integer> lowScorerList = IntStream.of(lowestScorers).boxed().collect(Collectors.toList());
+			for(Dancer d : belt.dancerList){
+				if(lowScorerList.contains(d.dancerId))
+					d.isLowerScorer=true;
+				else
+					d.isLowerScorer=false;
+			}
+			
+			
 			//System.out.println("MOVE");
 			setEveryoneToDance();	// Set everyone's status to be "WILL_Dance" (was dancing)
 			Set<Integer> curDancers = getCurDancers(enjoyment_gained);

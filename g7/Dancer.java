@@ -46,7 +46,13 @@ public class Dancer {
 		if(dancerStatus==WILL_MOVE || dancerStatus == UNDETERMINED)//Was moving
 			dancerStatus=WILL_DANCE;
 		else if(dancerStatus==WILL_DANCE){
-			if(friendToTime.containsKey(partnerDanceId) || partnerDanceId==soulMate){ //Partner is a friend or soulmate
+			if(partnerDanceId == soulMate){ //Partner is a soulmate
+				if(isLowerScorer)
+					dancerStatus = WILL_DANCE;
+				else
+					dancerStatus = WILL_MOVE;
+			}
+			else if(friendToTime.containsKey(partnerDanceId)){ //Partner is a friend
 				//System.out.println(friendToTime.get(partnerDanceId));
 				if(isLowerScorer && friendToTime.get(partnerDanceId) < 196) {//You're not bored of this friend
 					dancerStatus=WILL_DANCE; //Keep dancing
