@@ -33,8 +33,10 @@ public class Player implements sqdance.sim.Player {
 	private Belt belt;
 
 	
-	private static  int NUM_DANCE_TURNS = 1; // Only use (1,2,5,10)-1
+	private static  int NUM_DANCE_TURNS = 4; // Only use (1,2,5,10)-1
 	
+	private static int lowestDancers = -1;
+
 	private int danceTurn;
 
 	// init function called once with simulation parameters before anything else is called
@@ -64,6 +66,8 @@ public class Player implements sqdance.sim.Player {
 		for(int i=0; i<d; i++){
 			L[i] = belt.getPosition(belt.dancerList.get(i).beltIndex);
 		}
+		lowestDancers = belt.recommendedLowestDancerNumber;
+		
 		return L;
 	}
     
@@ -82,7 +86,7 @@ public class Player implements sqdance.sim.Player {
 	
 	public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
 		
-		System.out.println(Arrays.toString(bottomIndices(scores,scores.length/10)));
+		//System.out.println(Arrays.toString(bottomIndices(scores,scores.length/10)));
 		
 		
 		Point[] instructions = new Point[d];	
@@ -90,7 +94,7 @@ public class Player implements sqdance.sim.Player {
 			instructions[i] = new Point(0,0);
 
 		if(danceTurn == 0){
-			int[] lowestScorers = bottomIndices(scores,scores.length/10);
+			int[] lowestScorers = bottomIndices(scores,lowestDancers);
 			List<Integer> lowScorerList = IntStream.of(lowestScorers).boxed().collect(Collectors.toList());
 			for(Dancer d : belt.dancerList){
 				if(lowScorerList.contains(d.dancerId))
