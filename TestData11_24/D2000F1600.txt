@@ -1,0 +1,8 @@
+Group[0]	Minimum score: -2970
+Group[1]	Minimum score: 0
+Group[2]	Group[3]	Minimum score: 0
+Group[4]	Minimum score: 936
+Group[5]	Minimum score: 0
+Group[6]	Minimum score: 1434
+Group[7]	Minimum score: 1947
+Group[8]	Minimum score: -8935

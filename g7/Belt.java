@@ -28,6 +28,8 @@ public class Belt {
 	private static int MaxPairNum = 2;
 	private static int MaxContinuousDancers = 2;
 	
+	public int recommendedLowestDancerNumber = -1;
+	
 	public Belt(int numDancers){
 		if(numDancers%2!=0)
 			throw new RuntimeException("Number of Dancers must be even.");
@@ -135,15 +137,17 @@ public class Belt {
 		
 		int filledBlocksNeeded = numExtraDancers/24;//Later to be 24
 		filledBlocksNeeded += (numExtraDancers%24==0) ? 0 : 1;
-		int filledBlocksPerRow = filledBlocksNeeded/38;
-		filledBlocksPerRow += (filledBlocksNeeded%38==0) ? 0: 1;
+		int filledBlocksPerRow = filledBlocksNeeded/76;
+		filledBlocksPerRow += (filledBlocksNeeded%76==0) ? 0: 1;
 		filledBlocksPerRow = (numExtraDancers==0)? 0 : filledBlocksPerRow;
 
+		recommendedLowestDancerNumber = filledBlocksPerRow * 38 * 25;
+		recommendedLowestDancerNumber = (numExtraDancers==0)? numDancers : filledBlocksPerRow;
 		
 		for(int j=0; j<39; j++){
 			//int dancerOnRowCount = 0;
 			for(int i=0; i<38; i+=2){
-				boolean fillBlock = j<filledBlocksPerRow;
+				boolean fillBlock = j<filledBlocksPerRow || j>39-1-filledBlocksPerRow;
 
 				if(!fillBlock || numExtraDancers==0){
 					dancersPerBlock[i][j]=1;
