@@ -39,11 +39,17 @@ public class Player implements sqdance.sim.Player {
 
 	private int danceTurn;
 
+	private SoulmateMatching soulmateMatch = new SoulmateMatching();
+
+	private static final int soulmateThreshold = 800;
+
 	// init function called once with simulation parameters before anything else is called
 	public void init(int d, int room_side) {
 		this.d = d;
 		this.room_side = (double) room_side;
 		random = new Random();
+		soulmateMatch.init(d, room_side);
+
 		E = new int [d][d];
 		idle_turns = new int[d];
 		for (int i=0 ; i<d ; i++) {
@@ -61,6 +67,10 @@ public class Player implements sqdance.sim.Player {
 	// note the dance caller does not know any player-player relationships, so order doesn't really matter in the Point[] you return. Just make sure your player is consistent with the indexing
 
 	public Point[] generate_starting_locations() {
+		if (d <= soulmateThreshold) {
+			return soulmateMatch.generate_starting_locations();
+		}
+
 		belt = new Belt(d);	
 		Point[] L = new Point[d];
 		for(int i=0; i<d; i++){
@@ -85,6 +95,9 @@ public class Player implements sqdance.sim.Player {
 	}
 	
 	public Point[] play(Point[] dancers, int[] scores, int[] partner_ids, int[] enjoyment_gained) {
+		if (d <= soulmateThreshold) {
+			return soulmateMatch.play(dancers, scores, partner_ids, enjoyment_gained);
+		}
 		
 		//System.out.println(Arrays.toString(bottomIndices(scores,scores.length/10)));
 		
