@@ -181,6 +181,7 @@ public class Belt {
 		for(int row=0; row<38; row++){
 			for(int column=0; column<39; column++){
 				double offSet = (0.01) * (row/2);
+				//Point startPoint = new Point(column*0.51 + (row%2 * -0.5001/2),(row+1)*0.5001 + offSet);
 				Point startPoint = new Point(column*0.51,(row+1)*0.5001 + offSet);
 				//System.out.println("Row[" + row + "] Col[" + column + "]: " + dancersPerBlock[row][column]);
 				tableBlocks[row][column] = new Block(startPoint, dancersPerBlock[row][column], row%2==0);

@@ -1,0 +1,7 @@
+Group[0]	Minimum score: -7350
+Group[1]	Group[2]	Binary file (standard input) matches
+Group[3]	Dancer 3864 will have a long step for sMinimum score: 0
+Group[4]	Minimum score: 189
+Group[5]	Minimum score: 181
+Group[6]	Minimum score: 269
+Group[7]	Binary file (standard input) matches

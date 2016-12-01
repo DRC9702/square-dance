@@ -1,0 +1,9 @@
+Group[0]	Minimum score: -6155
+Group[1]	Group[2]	Minimum score: -8700
+Group[3]	Binary file (standard input) matches
+Group[4]	Minimum score: 330
+Group[5]	Minimum score: 328
+Group[6]	Minimum score: 484
+Group[7]	Binary file (standard input) matches
+Group[8]	Minimum score: -8935
+Group[9]	Minimum score: 0
