@@ -25,8 +25,8 @@ public class SoulmateMatching implements sqdance.sim.Player {
 	private int couples_found = 0;
 	private int stay = 0;
 	private boolean single_all_the_way = false;
-	private int normal_limit = 1600;
-	private int single_limit = 960;
+	private int normal_limit = 1600 - 304;
+	private int single_limit = 1000;
 
 	public class Dancer{
 		int id = -1;
@@ -34,7 +34,7 @@ public class SoulmateMatching implements sqdance.sim.Player {
 		Point next_pos = null;
 		Point des_pos = null;
 		int pit_id = -1;
-
+		Point cur_pos = null;
 		public Dancer(int id,int pit_id){
 			this.id = id;
 			this.pit_id = pit_id;
@@ -71,6 +71,8 @@ public class SoulmateMatching implements sqdance.sim.Player {
 	private Point[] position;
 
 	private int timeStamp = 0;
+
+	List<Point> occupiedPos = new ArrayList<>();
 
 
 	public void init(int d, int room_side) {
@@ -113,17 +115,19 @@ public class SoulmateMatching implements sqdance.sim.Player {
 		} 
 
 
-		double x = this.delta;
-		double y = this.delta;
+		
 		double increment = 0.5 + this.delta;
+		double border = 2*increment+this.delta;
+		double x = this.delta + border;
+		double y = this.delta + border;
 		int i = 0;
 		int old_i = -1;
 		int sign = 1;
 
-		double x_min = this.delta - safeDis;
-		double x_max = this.room_side + safeDis;
-		double y_min = this.delta;
-		double y_max = this.room_side + safeDis;
+		double x_min = this.delta - safeDis + border;
+		double x_max = this.room_side + safeDis - border;
+		double y_min = this.delta + border;
+		double y_max = this.room_side + safeDis - border;
 
 		//create the pits in a spiral fashion
 		while(old_i != i){
@@ -175,6 +179,7 @@ public class SoulmateMatching implements sqdance.sim.Player {
 			this.dancers[j] = new Dancer(j,j);
 			Point my_pos = this.pits[j].pos;
 			Point partner_pos = j%2 == 0? getNext(this.pits[j]).pos : getPrev(this.pits[j]).pos;
+			this.dancers[j].cur_pos = this.dancers[j].next_pos;
 			this.dancers[j].next_pos = findNearestActualPoint(my_pos,partner_pos);
 		}
 		this.state = 2;
@@ -220,16 +225,102 @@ public class SoulmateMatching implements sqdance.sim.Player {
 		for(int i = 0; i < d; i++){
 			if(enjoyment_gained[i] == 6){
 				if(relation[i][partner_ids[i]] != 1) {
-					//arrange destination for newly found couples					
-					Point des1 = this.pits[this.pits.length - 1 - this.couples_found].pos;
-					Point des2 = this.pits[this.pits.length - 2 - this.couples_found].pos;
-					dancers[i].des_pos = findNearestActualPoint(des1,des2);
-					dancers[i].pit_id = this.pits.length - 1 - this.couples_found;
-					dancers[partner_ids[i]].des_pos = findNearestActualPoint(des2,des1);
-					dancers[partner_ids[i]].pit_id = this.pits.length - 2 - this.couples_found;
+					//arrange destination for newly found couples	
+					int rem_dancers = this.d - this.couples_found;
+					if (rem_dancers <= 60) {
+						//only one layer left
+						Point myPos = dancers[i].cur_pos;
+						Point parPos = dancers[partner_ids[i]].cur_pos;
+
+						double deltaX;
+						double deltaY;
+
+						boolean vertical = false;
+						if (myPos.x==parPos.x) {
+							//l ,r 
+							deltaX = 0.52;
+							deltaY = 0.52;
+
+						} else {
+							deltaY = 0.52;
+							deltaX = 0.52;
+							vertical = true;
+						}
+
+						boolean found = false;
+						for (int m = -3;  m < 4 ; ++m) {
+							for (int n=-3 ; n < 4 ; ++n) {
+								if (m*deltaX*m*deltaX + n*deltaY*n*deltaY > 4)
+									continue;
+
+								double mX = myPos.x + m*deltaX;
+								double mY = myPos.y + n*deltaY;
+
+								double pX = parPos.x + m*deltaX;
+								double pY = parPos.y + n*deltaY;
+
+								if (mX < 0 || mX > this.room_side || mY < 0 || mY > this.room_side) {
+									continue;
+								}
+
+								if (pX < 0 || pX > this.room_side || pY < 0 || pY > this.room_side) {
+									continue;
+								}
+					
+
+								if (Math.abs(mX - 1.04) < 0.52 || Math.abs(mX - (this.room_side - 1.04) ) < 0.52 ||
+								 Math.abs(mY - 1.04) < 0.52 || Math.abs(mY - (this.room_side - 1.04) ) < 0.52) {
+									continue;
+								} 
+
+								if (Math.abs(pX - 1.04) < 0.52 || Math.abs(pX - (this.room_side - 1.04) ) < 0.52 ||
+								 Math.abs(pY - 1.04) < 0.52 || Math.abs(pY - (this.room_side - 1.04) ) < 0.52) {
+									continue;
+								} 
+								boolean allPointLarge = true;
+								for(Point p:occupiedPos){
+									if((mX-p.x)*(mX-p.x) + (mY-p.y)*(mY-p.y) < 0.52*0.52)
+										allPointLarge = false;
+									if((pX-p.x)*(pX-p.x) + (pY-p.y)*(pY-p.y) < 0.52*0.52)
+										allPointLarge = false;
+									if(!allPointLarge) break;
+								}
+								if(!allPointLarge){
+									continue;
+								}
+								found = true;
+								occupiedPos.add(new Point(mX,mY));
+								occupiedPos.add(new Point(pX,pY));
+								dancers[i].des_pos = new Point(mX,mY);
+								dancers[partner_ids[i]].des_pos = new Point(pX,pY);
+								break;
+							}
+							if(found) break;
+						}
+						if(!found){
+							Point des1 = this.pits[this.pits.length - 1 - this.couples_found].pos;
+							Point des2 = this.pits[this.pits.length - 2 - this.couples_found].pos;
+							dancers[i].des_pos = findNearestActualPoint(des1,des2);
+							dancers[partner_ids[i]].des_pos = findNearestActualPoint(des2,des1);
+						}
+						dancers[i].pit_id = this.pits.length - 1 - this.couples_found;
+						dancers[partner_ids[i]].pit_id = this.pits.length - 2 - this.couples_found;
+					}else{
+						Point des1 = this.pits[this.pits.length - 1 - this.couples_found].pos;
+						Point des2 = this.pits[this.pits.length - 2 - this.couples_found].pos;
+						dancers[i].des_pos = findNearestActualPoint(des1,des2);
+						dancers[i].pit_id = this.pits.length - 1 - this.couples_found;
+						dancers[partner_ids[i]].des_pos = findNearestActualPoint(des2,des1);
+						dancers[partner_ids[i]].pit_id = this.pits.length - 2 - this.couples_found;
+						if(rem_dancers < this.d/2){
+							occupiedPos.add(dancers[i].des_pos);
+							occupiedPos.add(dancers[partner_ids[i]].des_pos);
+						}
+					}
 					this.connected = false;
 					this.couples_found += 2;
 					new_couples += 2;
+					
 				}
 				relation[i][partner_ids[i]] = 1;
 				relation[partner_ids[i]][i] = 1;
@@ -285,10 +376,12 @@ public class SoulmateMatching implements sqdance.sim.Player {
 			if(dancers[dancer_id].soulmate != -1) continue;
 			int next_pit = getNextPit(pit_id);
 			if(next_pit == -1){
+				this.dancers[dancer_id].cur_pos = this.dancers[dancer_id].next_pos;
 				dancers[dancer_id].next_pos = new Point(pits[pit_id].pos.x, pits[pit_id].pos.y);
 				dancers[dancer_id].pit_id = pit_id;
 			}
 			else{
+				this.dancers[dancer_id].cur_pos = this.dancers[dancer_id].next_pos;
 				dancers[dancer_id].next_pos = findNearestActualPoint(pits[next_pit].pos, pits[pit_id].pos);
 				dancers[dancer_id].pit_id = next_pit;
 			}
@@ -347,6 +440,7 @@ public class SoulmateMatching implements sqdance.sim.Player {
 				pointer = prev;
 			}
 			dancers[dancer_id].pit_id = pointer.pit_id;
+			this.dancers[dancer_id].cur_pos = this.dancers[dancer_id].next_pos;
 			dancers[dancer_id].next_pos = pointer.pos;
 			this.connected = this.connected && pointer.pit_id == target_pit_id;
 			supposed_pit_num[dancer_id] = pointer.pit_id;
@@ -376,6 +470,7 @@ public class SoulmateMatching implements sqdance.sim.Player {
 			if(swap_and_dance){
 				for(int i = 0; i < d; i++){
 					if(dancers[i].soulmate != -1) continue;
+					this.dancers[i].cur_pos = this.dancers[i].next_pos;
 					dancers[i].next_pos = next_pos[i];
 					dancers[i].pit_id = next_pit_id[i];
 				}
@@ -398,6 +493,7 @@ public class SoulmateMatching implements sqdance.sim.Player {
 			if(dancers[i].soulmate == -1) continue;
 			Point curr = this.last_positions[i];
 			Point des = this.dancers[i].des_pos;
+			this.dancers[i].cur_pos = this.dancers[i].next_pos;
 			this.dancers[i].next_pos = findNextPosition(curr, des);
 		}
 	}
