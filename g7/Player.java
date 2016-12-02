@@ -48,7 +48,9 @@ public class Player implements sqdance.sim.Player {
 		this.d = d;
 		this.room_side = (double) room_side;
 		random = new Random();
-		soulmateMatch.init(d, room_side);
+		if (d <= soulmateThreshold) {
+			soulmateMatch.init(d, room_side);
+		}
 
 		E = new int [d][d];
 		idle_turns = new int[d];
