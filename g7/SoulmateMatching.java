@@ -120,6 +120,7 @@ public class SoulmateMatching implements sqdance.sim.Player {
 		double border = 2*increment+this.delta;
 		double x = this.delta + border;
 		double y = this.delta + border;
+
 		int i = 0;
 		int old_i = -1;
 		int sign = 1;
@@ -175,10 +176,13 @@ public class SoulmateMatching implements sqdance.sim.Player {
 		}
 
 		//put players in pits
+
 		for(int j = 0; j < d; j++){
 			this.dancers[j] = new Dancer(j,j);
 			Point my_pos = this.pits[j].pos;
 			Point partner_pos = j%2 == 0? getNext(this.pits[j]).pos : getPrev(this.pits[j]).pos;
+			if(j==0)
+				this.dancers[0].cur_pos = new Point(this.delta+border,this.delta+border);
 			this.dancers[j].cur_pos = this.dancers[j].next_pos;
 			this.dancers[j].next_pos = findNearestActualPoint(my_pos,partner_pos);
 		}
@@ -227,11 +231,10 @@ public class SoulmateMatching implements sqdance.sim.Player {
 				if(relation[i][partner_ids[i]] != 1) {
 					//arrange destination for newly found couples	
 					int rem_dancers = this.d - this.couples_found;
-					if (rem_dancers <= 60) {
+					Point myPos = dancers[i].cur_pos;
+					Point parPos = dancers[partner_ids[i]].cur_pos;
+					if (rem_dancers <= 60 && myPos!=null && parPos!=null) {
 						//only one layer left
-						Point myPos = dancers[i].cur_pos;
-						Point parPos = dancers[partner_ids[i]].cur_pos;
-
 						double deltaX;
 						double deltaY;
 
