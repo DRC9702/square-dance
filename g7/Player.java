@@ -148,7 +148,13 @@ public class Player implements sqdance.sim.Player {
 			
 		}
 		
+
 		danceTurn--;
+
+
+		for (int i=0 ; i<d ; ++i)
+			if(dancers[i].x + instructions[i].x < 0)
+				System.out.printf("Dancer[%d], BeltIndex[%d], Pos[%f,%f], Instruct[%f,%f]\n", i, belt.dancerList.get(i).beltIndex, dancers[i].x, dancers[i].y,instructions[i].x,instructions[i].y);
 		return instructions;
 	}
 

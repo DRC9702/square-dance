@@ -15,6 +15,9 @@ public class Belt {
 	
 	private Map<Integer,Integer> beltIndexToRowIndex;
 	private Map<Integer,Integer> beltIndexToColumnIndex;
+	private Map<Integer,Integer> beltIndexToDancerId = new HashMap<>();
+
+
 	
 	Point[][] tablePositions;
 	Block[][] tableBlocks;
@@ -100,6 +103,7 @@ public class Belt {
 		
 		for(int i=0; i<numDancers;i++){
 			dancerList.add(new Dancer(i, i));
+			beltIndexToDancerId.put(i,i);
 		}
 		
 	}
@@ -146,7 +150,7 @@ public class Belt {
 		int dancersInLastCol = (!overflow) ? 24 : (halfBlocksPerRow==1)? numExtraDancers : numExtraDancers%(24*88*(halfBlocksPerRow-1));
 		int dancersInLastColBlock = (dancersInLastCol%88==0) ? dancersInLastCol/88 : dancersInLastCol/88 + 1;
 
-		recommendedLowestDancerNumber = (halfBlocksPerRow-1==1) ? numDancers : (halfBlocksPerRow)*88*25;
+		recommendedLowestDancerNumber = 0;//(halfBlocksPerRow-1==1) ? numDancers : (halfBlocksPerRow)*88*25;
 		recommendedLowestDancerNumber = (numExtraDancers==0)? numDancers : recommendedLowestDancerNumber;
 		
 		for(int j=0; j<39; j++){
@@ -197,7 +201,7 @@ public class Belt {
 		for(int row=0; row<44; row++){
 			for(int column=0; column<39; column++){
 				double offSet = (0.01) * (row/2);
-				Point startPoint = new Point(column*0.51 + (row%2 * 0.5001/2),(row+1)*0.5001*(Math.sqrt(3)/2) + offSet);
+				Point startPoint = new Point(column*0.51 + (row%2 * 0.5001/2) + .01,(row+1)*0.5001*(Math.sqrt(3)/2) + offSet + .01);
 				//Point startPoint = new Point(column*0.51,(row+1)*0.5001 + offSet);
 				//System.out.println("Row[" + row + "] Col[" + column + "]: " + dancersPerBlock[row][column]);
 				tableBlocks[row][column] = new Block(startPoint, dancersPerBlock[row][column], row%2==0);
@@ -218,7 +222,7 @@ public class Belt {
 		for(int row=0; row<44; row++){
 			for(int column=0; column<39; column++){
 				double offSet = (0.01) * (row/2);
-				tablePositions[row][column] = new Point(column*0.51 + (row%2 * 0.5001/2),(row+1)*0.5001*(Math.sqrt(3)/2) + offSet);
+				tablePositions[row][column] = new Point(column*0.51 + (row%2 * 0.5001/2) + .01,(row+1)*0.5001*(Math.sqrt(3)/2) + offSet + .01);
 			}
 		}
 	}
@@ -300,6 +304,7 @@ public class Belt {
 //			newBeltIndex -= (i==numDancers-1) ? 1 : 0;
 			
 			oldDancer.beltIndex = newBeltIndex; 
+			beltIndexToDancerId.put(oldDancer.beltIndex, oldDancer.dancerId);
 		}
 
 		//System.out.println(instructions[0])
@@ -316,12 +321,23 @@ public class Belt {
 	
 	//ToDo: Easy to improve performance here but we're lazy and this is good enough.
 	public int beltIndexToDancer(int beltIndex){
-		for(Dancer d : dancerList){
-			if(d.beltIndex==beltIndex)
+		return beltIndexToDancerId.get(beltIndex);
+	}
+
+	/*public int beltIndexToDancer_debug(int beltIndex){
+		for (Dancer d : dancerList){
+			if (d.beltIndex == beltIndex) {
+				if (beltIndexToDancer(beltIndex) != d.dancerId) {
+					System.out.println("beltInde : " + beltIndex);
+					System.out.println("dancerId(corrent) : " + d.dancerId);
+					System.out.println("dancerId(wrong) : " + beltIndexToDancer(beltIndex));
+				}
 				return d.dancerId;
+			}
 		}
 		return -1;
-	}
+
+	}*/
 
 	public int getPartnerDancerID(int dancerId) {
 		int beltIndex = dancerList.get(dancerId).beltIndex;
