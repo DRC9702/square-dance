@@ -41,7 +41,7 @@ public class Player implements sqdance.sim.Player {
 
 	private SoulmateMatching soulmateMatch = new SoulmateMatching();
 
-	private static final int soulmateThreshold = 800;
+	private static final int soulmateThreshold = 812;
 
 	// init function called once with simulation parameters before anything else is called
 	public void init(int d, int room_side) {
@@ -61,8 +61,26 @@ public class Player implements sqdance.sim.Player {
 			}
 		}
 
-		NUM_DANCE_TURNS = d <= 1482 ? 9 : 1;
-		danceTurn = NUM_DANCE_TURNS;
+		if (d <= 1716) {
+			NUM_DANCE_TURNS = 19;	
+		} else if (d > 26400){
+			NUM_DANCE_TURNS = 1;	
+		} else {
+		int numDancers = d;
+		int numExtraDancers = (numDancers > 1716) ? numDancers - 1716: 0;
+		int numNeededBlocks = (numExtraDancers%24==0) ? numExtraDancers/24 : numExtraDancers/24 + 1;
+		int halfBlocksPerRow = (numNeededBlocks%88==0) ? numNeededBlocks/88 : numNeededBlocks/88 + 1;
+		boolean overflow = (numNeededBlocks%88!=0);
+		int dancersInLastCol = (!overflow) ? 24 : (halfBlocksPerRow==1)? numExtraDancers : numExtraDancers%(24*88*(halfBlocksPerRow-1));
+		int dancersInLastColBlock = (dancersInLastCol%88==0) ? dancersInLastCol/88 : dancersInLastCol/88 + 1;
+		int posToMove = 2*( (halfBlocksPerRow-1)*24 + dancersInLastColBlock) + (39 - 2*(halfBlocksPerRow));
+		NUM_DANCE_TURNS = (1800-posToMove)/posToMove;
+			//double k = (19.0-1.0)/(26400-1716);
+			//NUM_DANCE_TURNS = (int)(19 - k * (d - 1716));
+		}
+		
+		danceTurn = NUM_DANCE_TURNS > 19 ? 19 : NUM_DANCE_TURNS;
+		System.out.println(danceTurn);
 	}
 
 	// setup function called once to generate initial player locations

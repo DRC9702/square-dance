@@ -54,7 +54,7 @@ public class Dancer {
 			}
 			else if(friendToTime.containsKey(partnerDanceId)){ //Partner is a friend
 				//System.out.println(friendToTime.get(partnerDanceId));
-				if(isLowerScorer && friendToTime.get(partnerDanceId) < 196) {//You're not bored of this friend
+				if(isLowerScorer && friendToTime.get(partnerDanceId) < 156) {//You're not bored of this friend
 					dancerStatus=WILL_DANCE; //Keep dancing
 				} else {
 					dancerStatus=WILL_MOVE;	//Move

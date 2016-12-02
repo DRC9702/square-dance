@@ -23,7 +23,7 @@ public class Belt {
 	
 	boolean beltParity = false;
 	
-	private static int MaxNumPairRows = 19;
+	private static int MaxNumPairRows = 22;
 	private static int MaxNumCols = 39;
 	private static int MaxPairNum = 2;
 	private static int MaxContinuousDancers = 2;
@@ -36,11 +36,11 @@ public class Belt {
 		
 		this.numDancers = numDancers;
 		
-//		if(numDancers > 1482){
+		if(numDancers > 1716){
 			initializeDancersPerBlock(numDancers);
 			initializeTableBlocks();
-//		} 
-		initializeTablePositions(numDancers+1);
+		} 
+		initializeTablePositions(numDancers);
 		
 		indexToPositionSide = new HashMap<Integer,Point>();
 		beltIndexToRowIndex = new HashMap<Integer,Integer>();
@@ -49,15 +49,15 @@ public class Belt {
 		
 		int numCols = MaxNumCols;
 		int numRows;
-		if(numDancers <= 1482){
+		if(numDancers <= 1716){
 			numRows = (numDancers/2)/numCols * 2;
 			numRows += (numDancers%numCols==0)? 0 : 2;
-			dancersPerRow = new int[38];
-			for (int i=0 ; i<38 ; ++i)
+			dancersPerRow = new int[44];
+			for (int i=0 ; i<44 ; ++i)
 				dancersPerRow[i] = MaxNumCols;
 		}
 		else
-			numRows = 38;
+			numRows = 44;
 		
 		int row_index = 0;
 		int col_index = -1;
@@ -71,7 +71,7 @@ public class Belt {
 			// reset the counter, directions and dancersOnRow
 //			if (counter == dancersOnRow) {
 			//System.out.println("DancersPerRow: " + dancersPerRow[row_index]);
-			int threshold = numDancers <= 1482 ? dancersOnRow : dancersPerRow[row_index];
+			int threshold = numDancers <= 1716 ? dancersOnRow : dancersPerRow[row_index];
 			if (counter == threshold) {
 				//System.out.println("Inside if-statement");
 				goingRight = !goingRight;
@@ -85,7 +85,7 @@ public class Belt {
 				}
 
 				dancersOnRow = getNumOfCols(numDancers, numRows, row_index);
-				System.out.println(i + "---" + row_index + ":" + col_index);
+				//System.out.println(i + "---" + row_index + ":" + col_index);
 				
 				col_index = getNextColStartPos(goingRight, row_index, numRows, dancersOnRow);
 				counter = 0;
@@ -130,34 +130,45 @@ public class Belt {
 	
 
 	public void initializeDancersPerBlock(int numDancers){
-		dancersPerBlock = new int[38][39];
-		dancersPerRow = new int[38];
-		int numExtraDancers = (numDancers > 1482) ? numDancers - 1482: 0;
-		System.out.println("Number of ExtraDancers: " + numExtraDancers);
+		dancersPerBlock = new int[44][39];
+		dancersPerRow = new int[44];
+		int numExtraDancers = (numDancers > 1716) ? numDancers - 1716: 0;
+		//System.out.println("Number of ExtraDancers: " + numExtraDancers);
 		
-		int filledBlocksNeeded = numExtraDancers/24;//Later to be 24
-		filledBlocksNeeded += (numExtraDancers%24==0) ? 0 : 1;
-		int filledBlocksPerRow = filledBlocksNeeded/76;
-		filledBlocksPerRow += (filledBlocksNeeded%76==0) ? 0: 1;
-		filledBlocksPerRow = (numExtraDancers==0)? 0 : filledBlocksPerRow;
+		int numNeededBlocks = (numExtraDancers%24==0) ? numExtraDancers/24 : numExtraDancers/24 + 1;
 
-		recommendedLowestDancerNumber = filledBlocksPerRow * 38 * 25;
-		recommendedLowestDancerNumber = (numExtraDancers==0)? numDancers : filledBlocksPerRow;
+		int halfBlocksPerRow = (numNeededBlocks%88==0) ? numNeededBlocks/88 : numNeededBlocks/88 + 1;
+		boolean overflow = (numNeededBlocks%88!=0);
+		
+		//filledBlocksPerRow = (numExtraDancers==0)? 0 : filledBlocksPerRow;
+
+
+		int dancersInLastCol = (!overflow) ? 24 : (halfBlocksPerRow==1)? numExtraDancers : numExtraDancers%(24*88*(halfBlocksPerRow-1));
+		int dancersInLastColBlock = (dancersInLastCol%88==0) ? dancersInLastCol/88 : dancersInLastCol/88 + 1;
+
+		recommendedLowestDancerNumber = (halfBlocksPerRow-1==1) ? numDancers : (halfBlocksPerRow)*88*25;
+		recommendedLowestDancerNumber = (numExtraDancers==0)? numDancers : recommendedLowestDancerNumber;
 		
 		for(int j=0; j<39; j++){
 			//int dancerOnRowCount = 0;
-			for(int i=0; i<38; i+=2){
-				boolean fillBlock = j<filledBlocksPerRow || j>39-1-filledBlocksPerRow;
+			boolean fillBlock = j<halfBlocksPerRow || j>39-1-halfBlocksPerRow;
+			boolean lastColumn = j==halfBlocksPerRow-1 || j==39-1;
+
+			int fillAmount = (!lastColumn) ? 24 : dancersInLastColBlock;
+
+			for(int i=0; i<44; i+=2){
+				
 
 				if(!fillBlock || numExtraDancers==0){
 					dancersPerBlock[i][j]=1;
 					dancersPerBlock[i+1][j]=1;
 				}
 				else{
-					if(numExtraDancers>48){ //48
-						dancersPerBlock[i][j]=25; //25
-						dancersPerBlock[i+1][j]=25; //25
-						numExtraDancers -= 48; //48
+					int tmp = lastColumn?dancersInLastColBlock : 24;
+					if(numExtraDancers>tmp*2){ //48
+						dancersPerBlock[i][j]=tmp+1; //25
+						dancersPerBlock[i+1][j]=tmp+1; //25
+						numExtraDancers -= tmp*2; //48
 					}
 					else{
 						dancersPerBlock[i][j]=1 + numExtraDancers/2;
@@ -165,23 +176,28 @@ public class Belt {
 						numExtraDancers = 0;
 					}
 				}
+
 				dancersPerRow[i] += dancersPerBlock[i][j];
 				dancersPerRow[i+1] += dancersPerBlock[i][j];
+
 				//dancerOnRowCount+= dancersPerBlock[i][j];
 				//System.out.println("DancersInBlock[" + i + "," + (i+1) + "][" + j + "]: " + dancersPerBlock[i][j]);
 			}
 			
 			//System.out.println("DancersOn[" + i + "," + (i+1) + "]: " + dancerOnRowCount);
 		}
+		//for(int i=0;i<44;i++){
+		//	System.out.println("Dancer per row: "+ dancersPerRow[i]);
+		//}
 		
 	}
 	
 	public void initializeTableBlocks(){
-		tableBlocks = new Block[38][39];
-		for(int row=0; row<38; row++){
+		tableBlocks = new Block[44][39];
+		for(int row=0; row<44; row++){
 			for(int column=0; column<39; column++){
 				double offSet = (0.01) * (row/2);
-				Point startPoint = new Point(column*0.51 + (row%2 * -0.5001/2),(row+1)*0.5001 + offSet);
+				Point startPoint = new Point(column*0.51 + (row%2 * 0.5001/2),(row+1)*0.5001*(Math.sqrt(3)/2) + offSet);
 				//Point startPoint = new Point(column*0.51,(row+1)*0.5001 + offSet);
 				//System.out.println("Row[" + row + "] Col[" + column + "]: " + dancersPerBlock[row][column]);
 				tableBlocks[row][column] = new Block(startPoint, dancersPerBlock[row][column], row%2==0);
@@ -190,18 +206,19 @@ public class Belt {
 	}
 
 	public void initializeTablePositions(int numDancers){
-		if(numDancers <=1482)
-			initializeTablePositionsSmall(numDancers+1);
-		else
+		 if(numDancers <=1716)
+		 	initializeTablePositionsSmall(numDancers);
+		 else
 			initializeTablePositionsBig(numDancers);					
 	}
 	
 	public void initializeTablePositionsSmall(int numDancers){
-		tablePositions = new Point[38][39];
-		for(int row=0; row<38; row++){
+		recommendedLowestDancerNumber = numDancers;
+		tablePositions = new Point[44][39];
+		for(int row=0; row<44; row++){
 			for(int column=0; column<39; column++){
 				double offSet = (0.01) * (row/2);
-				tablePositions[row][column] = new Point(column*0.51,(row+1)*0.5001 + offSet);
+				tablePositions[row][column] = new Point(column*0.51 + (row%2 * 0.5001/2),(row+1)*0.5001*(Math.sqrt(3)/2) + offSet);
 			}
 		}
 	}
@@ -210,8 +227,8 @@ public class Belt {
 		if(numDancers < 1483)
 			throw new RuntimeException("Wrong method. Call the small one instead.");
 		
-		tablePositions = new Point[38][39*25]; //This number will change to 2 later
-		for(int row=0; row<38; row++){
+		tablePositions = new Point[44][39*25]; //This number will change to 2 later
+		for(int row=0; row<44; row++){
 			int colCount = 0;
 			for(int column=0; column<39; column++){
 				//System.out.println("Row[" + row + "] Col[" + column + "]");
@@ -326,7 +343,7 @@ public class Belt {
 		//int[][] dancerMatrix = new int[MaxNumPairRows*2][MaxNumCols];
 		//ToDo: (From David)Verify what I did here is correct
 		//I didn't write this method, I just patched it up to try and make it work
-		int[][] dancerMatrix = new int[38][39*25];
+		int[][] dancerMatrix = new int[44][39*25];
 		Map<String, Integer> posToDancerID = new HashMap<>();
 
 		for (Dancer d : curDancers) {

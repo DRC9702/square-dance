@@ -73,8 +73,9 @@ function process(data)
     ctx.font = "22px Arial";
     ctx.textAlign = "center";
     ctx.fillStyle = "black";
-    ctx.fillText("Time: " + clock, x_base + size * 0.35, y_base * 0.7);
-    ctx.fillText("Minimum score: " + min_score, x_base + size * 0.65, y_base * 0.7);
+    ctx.fillText("Time: " + clock, x_base + size * 0.25, y_base * 0.7);
+    ctx.fillText("Minimum score: " + min_score, x_base + size * 0.50, y_base * 0.7);
+    ctx.fillText("Group: " + group[0], x_base + size * 0.75, y_base * 0.7);
     // draw the players in the room
     ctx.font = "9px Arial";
     ctx.lineWidth = 0.5;
@@ -82,7 +83,7 @@ function process(data)
     for (var i = 0 ; i != N ; ++i) {
 	// previous position
 	ctx.beginPath();
-	ctx.arc(x_prev[i], y_prev[i], 3, 0, 2 * Math.PI);
+	ctx.arc(x_prev[i], y_prev[i], 1, 0, 2 * Math.PI);
 	ctx.fillStyle = "red";
 	ctx.fill();
 	// draw line between previous and current position
@@ -90,16 +91,17 @@ function process(data)
 	ctx.moveTo(x_prev[i], y_prev[i]);
 	ctx.lineTo(x_curr[i], y_curr[i]);
 	ctx.strokeStyle = "red";
+	ctx.lineWidth = 2;
 	ctx.stroke();
 	// current position
 	ctx.beginPath();
-	ctx.arc(x_curr[i], y_curr[i], 3, 0, 2 * Math.PI);
+	ctx.arc(x_curr[i], y_curr[i], 1, 0, 2 * Math.PI);
 	ctx.fillStyle = wiser[i] ? "blue" : "black";
 	ctx.fill();
 	// information text
-	var text = i;
-	if (wiser[i] || refresh < 0)
-	    text = text + ":" + wisdom[i] + ":" + score[i];
+	var text = "";//i;
+	// if (wiser[i] || refresh < 0)
+	//     text = text + ":" + wisdom[i] + ":" + score[i];
 	ctx.fillText(text, x_curr[i], y_curr[i] + 10);
 	// radius of influence
 	ctx.strokeStyle = ctx.fillStyle;
@@ -109,16 +111,17 @@ function process(data)
 	    ctx.stroke();
 	}
     }
-    // draw the chat connections
+    // draw the partner connections
     for (var i = 0 ; i != N ; ++i) {
 	var j = chat[i];
 	if (i != j) {
 	    if (rel[i] == 0)
-		ctx.strokeStyle = "blue";
+		ctx.strokeStyle = "blue"; // stranger dance
 	    else if (rel[i] == 1)
-		ctx.strokeStyle = "green";
+		ctx.strokeStyle = "green"; // friend dance
 	    else if (rel[i] == 2)
-		ctx.strokeStyle = "magenta";
+		ctx.strokeStyle = "magenta"; // soulmate dance
+	    ctx.lineWidth = 5;
 	    ctx.beginPath();
 	    ctx.moveTo(x_curr[i], y_curr[i]);
 	    ctx.lineTo(x_curr[j], y_curr[j]);
